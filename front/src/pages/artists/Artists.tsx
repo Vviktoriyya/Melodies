@@ -10,6 +10,7 @@ import TopTracks from "./artist/components/TopTracks.tsx";
 import ArtistAlbums from "./artist/components/ArtistAlbum.tsx";
 
 
+
 const fetchArtistTopTracks = async (artistId: number): Promise<TopTrack[]> => {
     const { data } = await axios.get(`http://localhost:5000/api/artist/${artistId}/top`);
     return data;
@@ -82,7 +83,6 @@ const Artists = () => {
 
             {!loadingTracks && <TopTracks topTracks={uiTopTracks} />}
             <ArtistAlbums albums={albums} isLoading={loadingAlbums} />
-
 
         </div>
     );

@@ -33,6 +33,38 @@ const TrackModal: React.FC<TrackModalProps> = ({ track, onClose }) => {
         return typeof track.artist === "string" ? track.artist : track.artist.name ?? "Unknown Artist";
     };
 
+    const favoriteButton = (
+        <button
+            onClick={handleFavoriteClick}
+            title={favorite ? "Remove from favorites" : "Add to favorites"}
+            className="group relative flex items-center justify-center rhap_button-clear"
+        >
+            <img
+                src={favorite ? favoriteSavedIcon : favoriteIcon}
+                className={`w-6 h-6 transition-all duration-300 ${ 
+                    favorite
+                        ? "scale-110 brightness-125 drop-shadow-[0_0_10px_#ff477e]"
+                        : "opacity-70 group-hover:opacity-100"
+                }`}
+                alt="Favorite"
+            />
+        </button>
+    );
+
+    const listenFullButton = (
+        <a
+            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${track.title} ${getArtistName(track)}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Listen full version on YouTube"
+            className="rhap_button-clear z-[10] text-sm font-semibold text-gray-400 hover:text-white transition-colors no-underline"
+            onClick={(e) => e.stopPropagation()}
+        >
+            Full
+        </a>
+    );
+
+
     return (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-[9999]" onClick={onClose}>
             <div
@@ -46,38 +78,19 @@ const TrackModal: React.FC<TrackModalProps> = ({ track, onClose }) => {
                     <img
                         src="assets/icon/cancel.png"
                         className="w-[25px] cursor-pointer invert brightness-200 hover:opacity-80 transition"
+                        alt="."
                     />
                 </button>
 
                 {track.cover && <img src={track.cover} alt={track.name} className="w-[250px] h-[250px] object-cover rounded-xl mb-4" />}
 
-                <div>
-                    <h1>{track.title}</h1>
-                    <p>{getArtistName(track)}</p>
+                <div className="text-center mb-2">
+                    <h1 className="text-xl font-bold">{track.title}</h1>
+                    <p className="text-gray-400">{getArtistName(track)}</p>
                 </div>
 
                 {(track?.full || track?.preview) && (
-                    <div className="w-full relative flex flex-col items-center">
-                        <div className="absolute left-5 pt-[100px] -translate-y-1/2 z-10">
-                            <button
-                                onClick={handleFavoriteClick}
-                                title={favorite ? "Remove from favorites" : "Add to favorites"}
-                                className="group relative flex items-center justify-center"
-                            >
-                                <img
-                                    src={favorite ? favoriteSavedIcon : favoriteIcon}
-                                    className={`w-[28px] h-[28px] transition-all duration-300 ${
-                                        favorite
-                                            ? "scale-110 brightness-125 drop-shadow-[0_0_10px_#ff477e]"
-                                            : "group-hover:scale-110 group-hover:brightness-125 group-hover:drop-shadow-[0_0_6px_#ff7bb5]"
-                                    }`}
-                                    alt="Favorite"
-                                />
-                                <span className="absolute left-10 bg-[#ff2f77] text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                                    {favorite ? "In favorites" : "Add to favorites"}
-                                </span>
-                            </button>
-                        </div>
+                    <div className="w-full flex flex-col items-center mt-2">
 
                         <AudioPlayer
                             src={track?.full ?? track?.preview ?? undefined}
@@ -85,29 +98,14 @@ const TrackModal: React.FC<TrackModalProps> = ({ track, onClose }) => {
                             showSkipControls={false}
                             showJumpControls={false}
                             autoPlayAfterSrcChange={true}
-                            className="w-full rounded-xl mt-2 audio-player-custom pl-10"
+                            className="w-full rounded-xl audio-player-custom"
+                            customAdditionalControls={[
+                                <div key="custom-controls" className="flex items-center gap-x-2">
+                                    {favoriteButton}
+                                    {listenFullButton}
+                                </div>
+                            ]}
                         />
-                        <a
-                            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${track.title} ${getArtistName(track)}`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="relative inline-block px-10 py-3 mt-4
-               font-bold text-white
-               border-2 border-zinc-700
-               rounded-[10px]
-               overflow-hidden
-               group
-               hover:border-fuchsia-600 hover:shadow-[0_0_15px_rgba(217,70,239,0.5)]
-               artist-glow"
-                        >
-                            <span className="absolute top-1/2 left-1/4 w-4 h-4 bg-fuchsia-500 rounded-full blur-md animate-float-up"></span>
-                            <span className="absolute top-1/3 left-2/3 w-2 h-2 bg-purple-500 rounded-full blur-sm animate-float-down"></span>
-                            <span className="absolute top-2/3 left-1/3 w-3 h-3 bg-fuchsia-400 rounded-full blur-sm animate-float-up"></span>
-                            <span className="absolute top-1/2 left-3/4 w-2 h-2 bg-purple-400 rounded-full blur-md animate-float-down"></span>
-
-                            <span className="relative z-10">Listen full</span>
-                        </a>
-
                     </div>
                 )}
             </div>

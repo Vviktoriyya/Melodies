@@ -28,7 +28,7 @@ const Favorites: React.FC = () => {
     };
 
     return (
-        <div className="w-full pt-[30px] min-h-screen bg-[#0f0f0f]">
+        <div className="w-full pt-[60px] relative h-full">
             <Header />
             <div className="pt-[100px] pl-[64px] text-white font-vazirmatn">
                 <h1 className="text-[32px] font-bold text-white mb-6">
@@ -37,7 +37,7 @@ const Favorites: React.FC = () => {
 
                 {!session && (
                     <p className="text-center text-gray-400 text-[20px] mt-20">
-                        Спочатку зареєструйтесь або увійдіть
+                        Please register or log in first :)
                     </p>
                 )}
 
@@ -48,7 +48,7 @@ const Favorites: React.FC = () => {
                 )}
 
                 {session && favorites.length > 0 && (
-                    <table className="w-full pb-[50px] pr-[100px] mt-6 text-white text-[20px] border-separate border-spacing-y-2">
+                    <table className="w-full  pr-[100px] mt-6 text-white text-[20px] border-separate border-spacing-y-2">
                         <thead>
                         <tr>
                             <th className="px-6 py-3 text-left">Track</th>

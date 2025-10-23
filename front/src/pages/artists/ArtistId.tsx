@@ -72,12 +72,13 @@ const ArtistId = () => {
 
             <Header />
 
-            <div className="absolute pt-[378px] border-b-4 w-full border-black pl-[44px] z-20 pointer-events-none">
+            <div className="absolute pt-[378px] border-b-4 w-full border-black pl-[44px]  z-20 pointer-events-none">
                 <h1 className="text-[96px] font-black text-white font-[Vazirmatn]">{artist.name}</h1>
             </div>
 
             {!isTracksLoading && <TopTracks topTracks={uiTopTracks} />}
             <ArtistAlbums albums={albums} isLoading={isAlbumsLoading} />
+
         </div>
     );
 };

@@ -1,9 +1,7 @@
 import { createContext, type ReactNode, useState, useEffect } from "react";
-
 import type { Track } from "../../../types/track.ts";
 import { useAuth } from "../../../context/AuthContext.tsx";
-import {supabase} from "../../../lib/superbaseClient.ts";
-
+import { supabase } from "../../../lib/superbaseClient.ts";
 
 interface FavoritesContextType {
     favorites: Track[];
@@ -18,7 +16,6 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     const { session } = useAuth();
     const [favorites, setFavorites] = useState<Track[]>([]);
 
-    // Завантаження фаворитів з Supabase + localStorage
     useEffect(() => {
         const fetchFavorites = async () => {
             if (!session) {
@@ -26,48 +23,45 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
                 return;
             }
 
-            // Спробуємо спочатку завантажити з localStorage
-            const saved = localStorage.getItem(`favorites_${session.user.id}`);
-            if (saved) {
-                setFavorites(JSON.parse(saved));
-            }
-
-            // Потім підтягнемо з Supabase
             const { data, error } = await supabase
                 .from("favorites")
-                .select("track")
-                .eq("user_id", session.user.id);
+                .select("track");
 
             if (error) {
-                console.log("Error fetching favorites:", error.message);
-            } else if (data) {
-                const supabaseFavorites = data.map((item: any) => item.track);
-                setFavorites(supabaseFavorites);
-                localStorage.setItem(`favorites_${session.user.id}`, JSON.stringify(supabaseFavorites));
+                console.error("Error fetching favorites:", error.message);
+                return;
             }
+
+            const parsedTracks = data?.map((item) =>
+                typeof item.track === "string" ? JSON.parse(item.track) : item.track
+            ) as Track[];
+
+            setFavorites(parsedTracks || []);
         };
+
         fetchFavorites();
     }, [session]);
 
     const addFavorite = async (track: Track) => {
         if (!session) {
-            alert("Спочатку зареєструйтесь або увійдіть");
+            alert("Please log in to add favorites ");
             return;
         }
 
-        if (favorites.some(t => t.id === track.id)) return;
+        if (favorites.some((t) => t.id === track.id)) return;
 
         const updated = [...favorites, track];
         setFavorites(updated);
 
-        // Зберігаємо в localStorage
-        localStorage.setItem(`favorites_${session.user.id}`, JSON.stringify(updated));
+        const { error } = await supabase.from("favorites").insert({
+            user_id: session.user.id,
+            track_id: track.id,
+            track: JSON.stringify(track),
+        });
 
-        // Зберігаємо в Supabase
-        const { error } = await supabase
-            .from("favorites")
-            .upsert({ user_id: session.user.id, track_id: track.id, track });
-        if (error) console.log("Error adding favorite:", error.message);
+        if (error) {
+            console.error("Error adding favorite:", error.message);
+        }
     };
 
     const removeFavorite = async (id: number | string) => {
@@ -76,16 +70,15 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
         const updated = favorites.filter((t) => t.id !== id);
         setFavorites(updated);
 
-        // Оновлюємо localStorage
-        localStorage.setItem(`favorites_${session.user.id}`, JSON.stringify(updated));
-
-        // Видаляємо з Supabase
         const { error } = await supabase
             .from("favorites")
             .delete()
             .eq("user_id", session.user.id)
             .eq("track_id", id);
-        if (error) console.log("Error removing favorite:", error.message);
+
+        if (error) {
+            console.error("Error removing favorite:", error.message);
+        }
     };
 
     const isFavorite = (id: number | string) => favorites.some((t) => t.id === id);

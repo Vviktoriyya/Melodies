@@ -7,6 +7,7 @@ import SingerList from "../../components/artist/SingerList.tsx";
 import MoodPlaylist from "../../components/mood-playlist/MoodPlaylist.tsx";
 import TopAlbums from "../../components/TopAlbums.tsx";
 
+
 export default function GenresPage() {
     const [genres, setGenres] = useState<Genre[]>([]);
     const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
@@ -61,9 +62,11 @@ export default function GenresPage() {
     const hasMoreGenres = genres.length > 6;
 
     return (
-        <div className={'flex pt-[30px]'}>
+        <div className={'flex pt-[30px] relative'}>
             <Header />
-            <div className="pt-[90px] pl-[64px] pb-16 w-full pr-8">
+
+            <div className="pt-[130px] pl-[64px]  w-full pr-8">
+
                 <h1 className="text-[32px] font-bold text-white mb-6">
                     Music <span className="text-[#EE10B0]">Genres</span>
                 </h1>
@@ -154,6 +157,7 @@ export default function GenresPage() {
 
                 <TopAlbums/>
             </div>
+
         </div>
     );
 }

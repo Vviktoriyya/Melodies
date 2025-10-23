@@ -16,6 +16,9 @@ export interface Track {
 export interface AlbumData {
     id: number;
     title: string;
+    cover: string;
+    cover_small: string;
+    cover_medium: string;
     cover_xl: string;
     cover_big: string;
     release_date: string;

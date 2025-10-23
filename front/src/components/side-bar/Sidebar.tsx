@@ -1,14 +1,19 @@
+
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext.tsx";
 import { supabase } from "../../lib/superbaseClient.ts";
 
-export default function Sidebar() {
+interface SidebarProps {
+    onLinkClick?: () => void;
+}
+
+export default function Sidebar({ onLinkClick }: SidebarProps) {
     const { session, setSession } = useAuth();
     const navigate = useNavigate();
 
     return (
-        <div className="max-w-[270px] flex gap-[16px] flex-col items-start justify-start pl-[64px] pr-[32px] pt-[48px] box-border border-r-[2px]">
-            <h1 className="text-[32px] font-extrabold w-[174px] text-left bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent font-vazirmatn">
+        <div className="w-[270px] flex gap-[16px] flex-col items-start justify-start p-6 md:pl-[64px] md:pr-[32px] md:pt-[48px] box-border">
+            <h1 className="hidden xl:block text-[32px] font-extrabold w-[174px] text-left bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent font-vazirmatn">
                 Melodies
             </h1>
 
@@ -16,18 +21,18 @@ export default function Sidebar() {
                 Menu
             </p>
 
-            <SidebarItem icon="Home" text="Home" to="/" />
-            <SidebarItem icon="Discover" text="Discover" to="/discover" />
-            <SidebarItem icon="Albums" text="Albums" to="/albums" />
-            <SidebarItem icon="Artists" text="Artists" to="/artists" />
+            <SidebarItem icon="Home" text="Home" to="/" onClick={onLinkClick} />
+            <SidebarItem icon="Discover" text="Discover" to="/discover" onClick={onLinkClick} />
+            <SidebarItem icon="Albums" text="Albums" to="/albums" onClick={onLinkClick} />
+            <SidebarItem icon="Artists" text="Artists" to="/artists" onClick={onLinkClick} />
 
             <p className="w-[174px] h-[19px] text-[12px] opacity-[0.6] text-[#ee10b0] flex justify-start items-center">
-                favorite
+                Favorite
             </p>
-            <SidebarItem icon="Favorites" text="Favorites" to="/favorites" />
+            <SidebarItem icon="Favorites" text="Favorites" to="/favorites" onClick={onLinkClick} />
 
             <p className="w-[174px] h-[19px] text-[12px] opacity-[0.6] text-[#ee10b0] flex justify-start items-center">
-                general
+                General
             </p>
             {session && (
                 <SidebarItem
@@ -38,6 +43,7 @@ export default function Sidebar() {
                         await supabase.auth.signOut();
                         setSession(null);
                         navigate("/");
+                        if (onLinkClick) onLinkClick();
                     }}
                 />
             )}
@@ -55,8 +61,7 @@ interface SidebarItemProps {
 
 function SidebarItem({ icon, text, to, isLogout = false, onClick }: SidebarItemProps) {
     const location = useLocation();
-    const isArtistsPage =
-        to === '/artists' && location.pathname.startsWith('/artists');
+    const isArtistsPage = to === '/artists' && location.pathname.startsWith('/artists');
 
     const content = (
         <>
@@ -84,10 +89,9 @@ function SidebarItem({ icon, text, to, isLogout = false, onClick }: SidebarItemP
     return (
         <NavLink
             to={to || '/'}
+            onClick={onClick}
             className={({ isActive }) =>
-                `cursor-pointer group flex gap-[8px] w-[174px] h-[40px] justify-start items-center
-                px-2 py-2 rounded-[10px] transition-all duration-200 ease-in-out
-                hover:bg-[#EE10B0] ${isActive || isArtistsPage ? 'bg-[#EE10B0]' : ''}`
+                `cursor-pointer group flex gap-[8px] w-[174px] h-[40px] justify-start items-center px-2 py-2 rounded-[10px] transition-all duration-200 ease-in-out hover:bg-[#EE10B0] ${isActive || isArtistsPage ? 'bg-[#EE10B0]' : ''}`
             }
         >
             {content}
