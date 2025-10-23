@@ -1,0 +1,1 @@
+import{a as o}from"./index-CiEQJ6jI.js";const e="http://localhost:5000";async function a(){try{return(await o.get(`${e}/api/top-artists`)).data.map(t=>({id:t.id,name:t.name,picture:t.picture}))}catch(r){return console.error("Error fetching top artists:",r),[]}}export{a as g};
